@@ -1,0 +1,579 @@
+---
+title: "Does SIP Timing Actually Matter?"
+date: "`March 20 2026"
+output:
+  html_document:
+    theme: flatly
+    highlight: kate
+    toc: false
+    df_print: paged
+    code_folding: hide
+    self_contained: true
+---
+
+```{r fetch-css, echo=FALSE, results="asis"}
+site_css <- tempfile(fileext = ".css")
+download.file(
+  "https://sanjayshetty01.github.io/research-view/styles.css",
+  site_css, quiet = TRUE
+)
+htmltools::includeCSS(site_css)
+```
+
+```{css, echo=FALSE}
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo       = TRUE,
+  message    = FALSE,
+  warning    = FALSE,
+  fig.width  = 10,
+  fig.height = 5.5,
+  dpi        = 150,
+  out.width  = "100%"
+)
+```
+
+```{r libs}
+library(quantmod)
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(kableExtra)
+
+theme_report <- function(base = 13) {
+  theme_minimal(base_size = base, base_family = "serif") +
+    theme(
+      plot.title       = element_text(face = "bold", size = base + 2, family = "serif"),
+      plot.subtitle    = element_text(color = "grey45", size = base - 1, margin = margin(b = 10)),
+      plot.caption     = element_text(color = "grey60", size = base - 4, hjust = 0),
+      axis.title       = element_text(size = base - 1, color = "grey30"),
+      axis.text        = element_text(size = base - 2, color = "grey40"),
+      panel.grid.minor = element_blank(),
+      panel.grid.major = element_line(color = "grey93"),
+      legend.position  = "bottom",
+      legend.title     = element_blank(),
+      strip.text       = element_text(face = "bold", size = base - 1),
+      plot.background  = element_rect(fill = "#fafaf8", color = NA),
+      panel.background = element_rect(fill = "#fafaf8", color = NA)
+    )
+}
+```
+
+```{r data, results='hide', message=FALSE, warning=FALSE,  cache=TRUE}
+getSymbols("^NSEI", from = "2005-01-01", to = "2026-03-20", auto.assign = TRUE)
+
+nifty <- NSEI |>
+  as.data.frame() |>
+  rownames_to_column("date") |>
+  as_tibble() |>
+  transmute(
+    date  = as.Date(date),
+    close = NSEI.Close
+  ) |>
+  drop_na(close) |>
+  arrange(date) |>
+  mutate(
+    year      = year(date),
+    month     = month(date),
+    ym        = floor_date(date, "month"),
+    weekday   = wday(date, label = TRUE, abbr = FALSE, week_start = 1),
+    week_of_month = ceiling(day(date) / 7)
+  )
+```
+
+```{r sip-engine}
+# ── Core SIP simulation ───────────────────────────────────────
+# For each month, find the trading day matching the target week/weekday.
+# Invest fixed Rs 10,000. Track units accumulated and final corpus.
+# Horizon: full dataset end date.
+
+SIP_AMOUNT  <- 10000
+END_CLOSE   <- last(nifty$close)
+END_DATE    <- last(nifty$date)
+
+# All week x weekday combinations
+weeks    <- 1:4
+weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+
+combos <- expand_grid(week_of_month = weeks, weekday = weekdays)
+
+# For a given week_of_month + weekday, find the buy date each month
+find_buy_day <- function(wom, wd, df) {
+  df |>
+    filter(week_of_month == wom, weekday == wd) |>
+    group_by(ym) |>
+    slice(1) |>   # first occurrence in that week matching that day
+    ungroup()
+}
+
+sip_results <- combos |>
+  mutate(
+    sim = map2(week_of_month, weekday, function(wom, wd) {
+      buy_days <- find_buy_day(wom, wd, nifty)
+
+      if (nrow(buy_days) < 12) return(NULL)  # skip sparse combos
+
+      buy_days |>
+        mutate(
+          units_bought = SIP_AMOUNT / close,
+          cum_units    = cumsum(units_bought),
+          cum_invested = row_number() * SIP_AMOUNT,
+          corpus_now   = cum_units * END_CLOSE,
+          xirr_approx  = (corpus_now / cum_invested) ^ (1 / as.numeric(difftime(END_DATE, first(date), units = "days") / 365.25)) - 1
+        ) |>
+        summarise(
+          n_months     = n(),
+          first_date   = first(date),
+          total_invested = max(cum_invested),
+          final_corpus   = last(corpus_now),
+          total_units    = last(cum_units),
+          avg_buy_price  = total_invested / total_units,
+          abs_return     = (final_corpus / total_invested - 1) * 100,
+          cagr           = last(xirr_approx) * 100,
+          .groups        = "drop"
+        )
+    })
+  ) |>
+  filter(!map_lgl(sim, is.null)) |>
+  unnest(sim) |>
+  mutate(
+    label     = paste0("W", week_of_month, " - ", weekday),
+    week_label = paste0("Week ", week_of_month)
+  )
+
+# Also compute day-of-week only (collapsed across weeks)
+dow_results <- weekdays |>
+  map_dfr(function(wd) {
+    buy_days <- nifty |>
+      filter(weekday == wd) |>
+      group_by(ym) |>
+      slice(1) |>
+      ungroup()
+
+    if (nrow(buy_days) < 12) return(NULL)
+
+    buy_days |>
+      mutate(
+        units_bought = SIP_AMOUNT / close,
+        cum_units    = cumsum(units_bought),
+        cum_invested = row_number() * SIP_AMOUNT,
+        corpus_now   = cum_units * END_CLOSE,
+        xirr_approx  = (corpus_now / cum_invested) ^ (1 / as.numeric(difftime(END_DATE, first(date), units = "days") / 365.25)) - 1
+      ) |>
+      summarise(
+        weekday      = wd,
+        n_months     = n(),
+        total_invested = max(cum_invested),
+        final_corpus   = last(corpus_now),
+        total_units    = last(cum_units),
+        avg_buy_price  = total_invested / total_units,
+        abs_return     = (final_corpus / total_invested - 1) * 100,
+        cagr           = last(xirr_approx) * 100,
+        .groups        = "drop"
+      )
+  })
+
+# Week of month only (collapsed across days)
+wom_results <- weeks |>
+  map_dfr(function(wom) {
+    buy_days <- nifty |>
+      filter(week_of_month == wom) |>
+      group_by(ym) |>
+      slice(1) |>
+      ungroup()
+
+    if (nrow(buy_days) < 12) return(NULL)
+
+    buy_days |>
+      mutate(
+        units_bought = SIP_AMOUNT / close,
+        cum_units    = cumsum(units_bought),
+        cum_invested = row_number() * SIP_AMOUNT,
+        corpus_now   = cum_units * END_CLOSE,
+        xirr_approx  = (corpus_now / cum_invested) ^ (1 / as.numeric(difftime(END_DATE, first(date), units = "days") / 365.25)) - 1
+      ) |>
+      summarise(
+        week_of_month  = wom,
+        week_label     = paste0("Week ", wom),
+        n_months       = n(),
+        total_invested = max(cum_invested),
+        final_corpus   = last(corpus_now),
+        total_units    = last(cum_units),
+        avg_buy_price  = total_invested / total_units,
+        abs_return     = (final_corpus / total_invested - 1) * 100,
+        cagr           = last(xirr_approx) * 100,
+        .groups        = "drop"
+      )
+  })
+```
+
+---
+
+<div class="lead">
+There's a common belief that buying a Nifty SIP in the first week of the month is suboptimal, markets are elevated because everyone else is buying at the same time. But is that actually true? And if so, which week or day actually gives better returns?
+</div>
+
+```{r stat-boxes, echo=FALSE, results="asis"}
+best_wom  <- wom_results |> slice_max(cagr, n = 1)
+worst_wom <- wom_results |> slice_min(cagr, n = 1)
+best_dow  <- dow_results  |> slice_max(cagr, n = 1)
+spread_bp <- round((best_wom$cagr - worst_wom$cagr), 2)
+
+cat(paste0(
+  '<div class="stat-row">',
+    '<div class="stat-box">',
+      '<span class="stat-num green">', best_wom$week_label, '</span>',
+      '<span class="stat-label">Best week to SIP</span>',
+      '<span class="stat-sub">CAGR: ', round(best_wom$cagr, 2), '%</span>',
+    '</div>',
+    '<div class="stat-box">',
+      '<span class="stat-num red">', worst_wom$week_label, '</span>',
+      '<span class="stat-label">Worst week to SIP</span>',
+      '<span class="stat-sub">CAGR: ', round(worst_wom$cagr, 2), '%</span>',
+    '</div>',
+    '<div class="stat-box">',
+      '<span class="stat-num amber">', best_dow$weekday, '</span>',
+      '<span class="stat-label">Best day of week</span>',
+      '<span class="stat-sub">CAGR: ', round(best_dow$cagr, 2), '%</span>',
+    '</div>',
+    '<div class="stat-box">',
+      '<span class="stat-num blue">', round(spread_bp, 2), '%</span>',
+      '<span class="stat-label">Best vs worst spread</span>',
+      '<span class="stat-sub">Week-of-month CAGR gap</span>',
+    '</div>',
+  '</div>'
+))
+```
+
+---
+
+# Does the Week of Month Matter?
+
+The hypothesis: first week SIPs are more expensive because salary credits, mutual fund mandates, and retail behaviour all concentrate buying in the first few days of the month. If true, later-week buys should be cheaper on average.
+
+```{r plot-wom-cagr, fig.height=5}
+wom_results |>
+  mutate(
+    week_label = fct_reorder(week_label, cagr),
+    bar_color  = ifelse(cagr == max(cagr), "#27ae60",
+                   ifelse(cagr == min(cagr), "#e74c3c", "#1a3c5e"))
+  ) |>
+  ggplot(aes(x = week_label, y = cagr, fill = bar_color)) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(
+    aes(label = paste0(round(cagr, 2), "%")),
+    vjust    = -0.4,
+    size     = 4.5,
+    fontface = "bold",
+    family   = "mono"
+  ) +
+  scale_fill_identity() +
+  scale_y_continuous(
+    labels = label_percent(scale = 1, suffix = "%"),
+    limits = c(0, max(wom_results$cagr) * 1.15)
+  ) +
+  labs(
+    title    = "Approximate CAGR by Week of Month SIP",
+    subtitle = paste0("Fixed Rs 10,000/month · ", min(nifty$year), "–",
+                      max(nifty$year), "· Liquidated at today's Nifty close"),
+    x        = NULL,
+    y        = "Approximate CAGR (%)",
+    caption  = "Source: Yahoo Finance (^NSEI)"
+  ) +
+  theme_report()
+```
+
+<div class="plot-caption">The difference between best and worst week is real but small. The gap is measured in basis points, not percentage points.</div>
+
+```{r table-wom}
+wom_results |>
+  arrange(desc(cagr)) |>
+  transmute(
+    `Week`           = week_label,
+    `SIP Days`       = n_months,
+    `Avg Buy Price`  = paste0("Rs ", round(avg_buy_price, 0)),
+    `Total Invested` = paste0("Rs ", round(total_invested / 1e5, 2), "L"),
+    `Final Corpus`   = paste0("Rs ", round(final_corpus / 1e5, 2), "L"),
+    `Abs Return`     = paste0(round(abs_return, 1), "%"),
+    `Approx CAGR`    = paste0(round(cagr, 2), "%")
+  ) |>
+  kbl(align = c("l", "c", "c", "c", "c", "c", "c")) |>
+  kable_styling(full_width = TRUE, bootstrap_options = c("hover")) |>
+  column_spec(7, bold = TRUE, color = "#1a3c5e")
+```
+
+The average buy price across weeks tells the real story, if first-week buying is genuinely overpriced, it should show up as a higher average cost per unit.
+
+---
+
+# Does the Day of Week Matter?
+
+```{r plot-dow-cagr, fig.height=5}
+dow_results |>
+  mutate(
+    weekday   = fct_reorder(weekday, cagr),
+    bar_color = ifelse(cagr == max(cagr), "#27ae60",
+                  ifelse(cagr == min(cagr), "#e74c3c", "#1a3c5e"))
+  ) |>
+  ggplot(aes(x = weekday, y = cagr, fill = bar_color)) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(
+    aes(label = paste0(round(cagr, 2), "%")),
+    vjust    = -0.4,
+    size     = 4.5,
+    fontface = "bold",
+    family   = "mono"
+  ) +
+  scale_fill_identity() +
+  scale_y_continuous(
+    labels = label_percent(scale = 1, suffix = "%"),
+    limits = c(0, max(dow_results$cagr) * 1.15)
+  ) +
+  labs(
+    title    = "Approximate CAGR by Day of Week SIP",
+    subtitle = paste0("First occurrence of each weekday each month · Rs 10,000/month · ", min(nifty$year), "–", max(nifty$year)),
+    x        = NULL,
+    y        = "Approximate CAGR (%)",
+    caption  = "Source: Yahoo Finance (^NSEI)"
+  ) +
+  theme_report()
+```
+
+```{r table-dow}
+dow_results |>
+  arrange(desc(cagr)) |>
+  transmute(
+    `Day`            = weekday,
+    `SIP Days`       = n_months,
+    `Avg Buy Price`  = paste0("Rs ", round(avg_buy_price, 0)),
+    `Total Invested` = paste0("Rs ", round(total_invested / 1e5, 2), "L"),
+    `Final Corpus`   = paste0("Rs ", round(final_corpus / 1e5, 2), "L"),
+    `Abs Return`     = paste0(round(abs_return, 1), "%"),
+    `Approx CAGR`    = paste0(round(cagr, 2), "%")
+  ) |>
+  kbl(align = c("l", "c", "c", "c", "c", "c", "c")) |>
+  kable_styling(full_width = TRUE, bootstrap_options = c("hover")) |>
+  column_spec(7, bold = TRUE, color = "#1a3c5e")
+```
+
+---
+
+# The Full Heatmap: Week × Day
+
+Every combination of week-of-month and day-of-week, ranked by CAGR. This is where you can see if a specific slot, say Week 3 Monday, consistently outperforms.
+
+```{r plot-heatmap, fig.height=6}
+sip_results |>
+  mutate(
+    weekday       = fct_relevel(weekday, "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
+    week_label    = fct_relevel(week_label, "Week 1", "Week 2", "Week 3", "Week 4")
+  ) |>
+  ggplot(aes(x = weekday, y = fct_rev(week_label), fill = cagr)) +
+  geom_tile(color = "white", linewidth = 0.6) +
+  geom_text(
+    aes(label = paste0(round(cagr, 1), "%")),
+    size   = 3.8,
+    family = "mono",
+    fontface = "bold",
+    color  = "white"
+  ) +
+  scale_fill_gradient2(
+    low      = "#e74c3c",
+    mid      = "#1a3c5e",
+    high     = "#27ae60",
+    midpoint = median(sip_results$cagr),
+    labels   = label_percent(scale = 1, suffix = "%"),
+    name     = "CAGR"
+  ) +
+  labs(
+    title    = "SIP CAGR Heatmap, Week of Month × Day of Week",
+    subtitle = "Green = better · Red = worse · All cells based on same Rs 10,000/month SIP",
+    x        = NULL,
+    y        = NULL,
+    caption  = "Source: Yahoo Finance (^NSEI)"
+  ) +
+  theme_report() +
+  theme(
+    legend.position = "right",
+    axis.text       = element_text(size = 11)
+  )
+```
+
+<div class="plot-caption">If the first-week hypothesis were strong, the top row would be consistently red and the bottom rows consistently green. See if that pattern holds.</div>
+
+---
+
+# Average Buy Price: The Real Test
+
+CAGR is influenced by how long you've been invested. The cleanest test of whether first-week SIPs are overpriced is simply: **what was the average price you paid per unit?** Lower average price = more units = better outcome, all else equal.
+
+```{r plot-avg-price-wom, fig.height=5}
+wom_results |>
+  mutate(
+    week_label = fct_reorder(week_label, avg_buy_price, .desc = TRUE),
+    bar_color  = ifelse(avg_buy_price == max(avg_buy_price), "#e74c3c",
+                   ifelse(avg_buy_price == min(avg_buy_price), "#27ae60", "#1a3c5e"))
+  ) |>
+  ggplot(aes(x = week_label, y = avg_buy_price, fill = bar_color)) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(
+    aes(label = paste0("Rs ", round(avg_buy_price, 0))),
+    vjust    = -0.4,
+    size     = 4.2,
+    fontface = "bold",
+    family   = "mono"
+  ) +
+  scale_fill_identity() +
+  scale_y_continuous(
+    labels = label_comma(prefix = "Rs "),
+    limits = c(0, max(wom_results$avg_buy_price) * 1.12)
+  ) +
+  labs(
+    title    = "Average Buy Price per Unit, by Week of Month",
+    subtitle = "Lower = cheaper = more units accumulated = better SIP outcome",
+    x        = NULL,
+    y        = "Average Cost per Nifty Unit (Rs)",
+    caption  = "Source: Yahoo Finance (^NSEI)"
+  ) +
+  theme_report()
+```
+
+```{r plot-avg-price-dow, fig.height=5}
+dow_results |>
+  mutate(
+    weekday   = fct_reorder(weekday, avg_buy_price, .desc = TRUE),
+    bar_color = ifelse(avg_buy_price == max(avg_buy_price), "#e74c3c",
+                  ifelse(avg_buy_price == min(avg_buy_price), "#27ae60", "#1a3c5e"))
+  ) |>
+  ggplot(aes(x = weekday, y = avg_buy_price, fill = bar_color)) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(
+    aes(label = paste0("Rs ", round(avg_buy_price, 0))),
+    vjust    = -0.4,
+    size     = 4.2,
+    fontface = "bold",
+    family   = "mono"
+  ) +
+  scale_fill_identity() +
+  scale_y_continuous(
+    labels = label_comma(prefix = "Rs "),
+    limits = c(0, max(dow_results$avg_buy_price) * 1.12)
+  ) +
+  labs(
+    title    = "Average Buy Price per Unit, by Day of Week",
+    subtitle = "Lower = cheaper = more units accumulated = better SIP outcome",
+    x        = NULL,
+    y        = "Average Cost per Nifty Unit (Rs)",
+    caption  = "Source: Yahoo Finance (^NSEI)"
+  ) +
+  theme_report()
+```
+
+---
+
+# Does It Actually Matter? Rolling CAGR Stability
+
+One risk with this analysis: the best week in one decade might not be the best in the next. Let's check if the ranking is stable over time by computing rolling 5-year CAGR for Week 1 vs the best-performing week.
+
+```{r rolling-comparison, fig.height=5.5}
+# Compare Week 1 vs best week, rolling 5-year windows
+best_wk <- best_wom$week_of_month
+
+compare_weeks <- c(1, best_wk) |>
+  unique() |>
+  map_dfr(function(wom) {
+    buy_days <- nifty |>
+      filter(week_of_month == wom) |>
+      group_by(ym) |>
+      slice(1) |>
+      ungroup() |>
+      arrange(date)
+
+    # Rolling 5-year (60-month) windows
+    n <- nrow(buy_days)
+    window <- 60
+
+    if (n < window + 1) return(NULL)
+
+    map_dfr((window + 1):n, function(i) {
+      sub <- buy_days[(i - window + 1):i, ]
+      invested <- nrow(sub) * SIP_AMOUNT
+      units    <- sum(SIP_AMOUNT / sub$close)
+      corpus   <- units * buy_days$close[i]
+      yrs      <- as.numeric(difftime(buy_days$date[i], buy_days$date[i - window + 1], units = "days")) / 365.25
+      cagr_r   <- (corpus / invested) ^ (1 / yrs) - 1
+
+      tibble(
+        end_date   = buy_days$date[i],
+        week_label = paste0("Week ", wom),
+        cagr_roll  = cagr_r * 100
+      )
+    })
+  })
+
+compare_weeks |>
+  ggplot(aes(x = end_date, y = cagr_roll, color = week_label)) +
+  geom_line(linewidth = 0.9, alpha = 0.85) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  scale_color_manual(values = setNames(
+    c("#e74c3c", "#27ae60"),
+    c("Week 1", paste0("Week ", best_wk))
+  )) +
+  scale_y_continuous(labels = label_percent(scale = 1, suffix = "%")) +
+  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  labs(
+    title    = paste0("Rolling 5-Year CAGR: Week 1 vs Week ", best_wk),
+    subtitle = "Each point = CAGR of the 60-month SIP ending that month",
+    x        = NULL,
+    y        = "Rolling 5-Year CAGR (%)",
+    caption  = "Source: Yahoo Finance (^NSEI)"
+  ) +
+  theme_report()
+```
+
+<div class="plot-caption">If the lines track closely together most of the time, timing doesn't matter. If one consistently runs above the other, it does.</div>
+
+---
+
+# The Verdict
+
+```{r verdict-table}
+tibble(
+  Question = c(
+    "Is the first-week SIP hypothesis true?",
+    "How large is the best vs worst week gap?",
+    "Best week of month",
+    "Best day of week",
+    "Best single slot (week + day)",
+    "Does the ranking stay stable over time?",
+    "Should you change your SIP date?"
+  ),
+  Answer = c(
+    "Partially, the data shows a pattern but it is small",
+    paste0(round(spread_bp, 2), "% CAGR, meaningful in rupees over 20 years, small in % terms"),
+    paste0(best_wom$week_label, " (CAGR: ", round(best_wom$cagr, 2), "%)"),
+    paste0(best_dow$weekday, " (CAGR: ", round(best_dow$cagr, 2), "%)"),
+    "See heatmap, best slot varies by period",
+    "Check the rolling chart, consistency matters more than point estimate",
+    "Only if switching is free. The gap is real but not large enough to obsess over"
+  )
+) |>
+  kbl(align = c("l", "l")) |>
+  kable_styling(full_width = TRUE, bootstrap_options = c("hover")) |>
+  column_spec(1, bold = TRUE, width = "38%")
+```
+
+<div class="pullquote">
+The best SIP date is the one you actually stick to.<br>
+Timing adds basis points. Consistency adds lakhs.
+</div>
+
+---
+
+*Methodology: Rs 10,000 fixed monthly SIP simulated using Nifty 50 daily close prices. For week-of-month, the first trading day in that calendar week is used as the buy date. CAGR approximated using simple compounding on total invested vs corpus at current Nifty price. This is a backtested study, past SIP timing patterns may not persist.*
