@@ -5,53 +5,26 @@ output:
   html_document:
     theme: flatly
     highlight: kate
-    toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: true
+    toc: false
     toc_depth: 2
     df_print: paged
     code_folding: hide
     self_contained: true
     keep_md: yes
+    css: "https://sanjayshetty01.github.io/research-view/styles.css"
 ---
-
 
 <style type="text/css">
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
-body {
-  font-family: 'Source Serif 4', Georgia, serif;
-  font-size: 17px;
-  line-height: 1.85;
-  color: #1a1a2e;
-  background: #fafaf8;
-}
-
-/* Fix TOC overlap — push main content right */
-.col-md-9 {
-  width: 75% !important;
-  margin-left: 25% !important;
-}
-#TOC {
-  width: 22% !important;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  background: #f7f9fc;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 0.8rem;
-}
-#TOC ul { padding-left: 0.8rem; }
-#TOC a  { color: #1a3c5e; }
-
+/* ── Layout ───────────────────────────── */
 .main-container {
   max-width: 960px;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Typography */
+/* ── Title block ── */
 .title {
   font-family: 'Playfair Display', serif !important;
   font-size: 2.4rem !important;
@@ -59,6 +32,7 @@ body {
   color: #1a1a2e;
   line-height: 1.2;
 }
+
 .date {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
@@ -67,14 +41,17 @@ body {
   text-transform: uppercase;
 }
 
-h1{
-    font-family: 'Playfair Display', serif;
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: #1a1a2e;
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
-    }
+/* ── Headings ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 5px;
+  margin-top: 2.2rem;
+}
+
 h2 {
   font-family: 'Source Serif 4', serif;
   font-size: 1.15rem;
@@ -83,19 +60,7 @@ h2 {
   margin-top: 1.6rem;
 }
 
-/* Lead */
-.lead {
-    font-size: 1.05rem;
-    color: #444;
-    font-style: italic;
-    border-left: 4px solid #e74c3c;
-    padding: 0.6rem 1.2rem;
-    margin: 0 0 2.5rem 0;
-    background: #fff8f7;
-    border-radius: 0 6px 6px 0;
-}
-
-/* Pull quote */
+/* ── Pull quote ── */
 .pullquote {
   font-family: 'Playfair Display', serif;
   font-size: 1.2rem;
@@ -109,50 +74,7 @@ h2 {
   line-height: 1.6;
 }
 
-/* Stat row */
-.stat-row {
-  display: flex;
-  gap: 14px;
-  margin: 1.4rem 0;
-  flex-wrap: wrap;
-}
-.stat-box {
-  flex: 1;
-  min-width: 140px;
-  background: #1a1a2e;
-  color: white;
-  border-radius: 8px;
-  padding: 1rem 0.9rem;
-  text-align: center;
-}
-.stat-box .stat-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2rem;
-  font-weight: 700;
-  display: block;
-  line-height: 1.1;
-}
-.stat-num.red   { color: #e74c3c; }
-.stat-num.amber { color: #f39c12; }
-.stat-num.blue  { color: #5dade2; }
-.stat-num.green { color: #58d68d; }
-.stat-box .stat-label {
-  font-size: 0.72rem;
-  opacity: 0.65;
-  margin-top: 4px;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  display: block;
-}
-.stat-box .stat-sub {
-  font-size: 0.68rem;
-  opacity: 0.45;
-  margin-top: 2px;
-  display: block;
-}
-
-/* Callout */
+/* ── Callout ── */
 .callout {
   background: #fff3cd;
   border-left: 4px solid #f39c12;
@@ -161,14 +83,23 @@ h2 {
   border-radius: 0 6px 6px 0;
   font-size: 0.95rem;
 }
-.callout.red  { background: #fdecea; border-left-color: #e74c3c; }
-.callout.blue { background: #eaf4fb; border-left-color: #1a3c5e; }
+.callout.red   { background: #fdecea; border-left-color: #e74c3c; }
+.callout.blue  { background: #eaf4fb; border-left-color: #1a3c5e; }
 .callout.green { background: #eafaf1; border-left-color: #27ae60; }
 
-/* Tables */
+/* ── Stat extras not in site CSS ── */
+.stat-num.amber { color: #f39c12; }
+.stat-box .stat-sub {
+  font-size: 0.68rem;
+  opacity: 0.45;
+  margin-top: 2px;
+  display: block;
+}
+
+/* ── Tables ── */
 table {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.81rem;
+  font-size: 1.2rem;
   width: 100%;
   border-collapse: collapse;
   margin: 0.8rem 0 1.4rem 0;
@@ -180,6 +111,7 @@ tbody tr:nth-child(odd)  { background: #ffffff; }
 tbody td { padding: 7px 13px; text-align: center; border-bottom: 1px solid #e8eaed; }
 tbody td:first-child { text-align: left; font-weight: 600; }
 
+/* ── Code ── */
 pre, code {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.81rem;
@@ -187,6 +119,7 @@ pre, code {
   border-radius: 4px;
 }
 
+/* ── Misc ── */
 .plot-caption {
   font-size: 0.81rem;
   color: #888;
@@ -216,7 +149,6 @@ library(slider)
 library(kableExtra)
 library(patchwork)
 
-# ── Shared theme ──────────────────────────────────────────────
 theme_report <- function(base = 13) {
   theme_minimal(base_size = base, base_family = "serif") +
     theme(
@@ -276,12 +208,11 @@ nifty <- NSEI |>
 
 
 ``` r
-# Build forward returns for all three thresholds
 thresholds <- list("1%+" = -0.01, "2%+" = -0.02, "3%+" = -0.03)
 
 fwd_all <- map_dfr(names(thresholds), function(label) {
-  thresh      <- thresholds[[label]]
-  fall_idx    <- which(nifty$ret <= thresh)
+  thresh   <- thresholds[[label]]
+  fall_idx <- which(nifty$ret <= thresh)
 
   map_dfr(fall_idx, function(i) {
     map_dfr(HORIZONS, function(h) {
@@ -303,7 +234,6 @@ fwd_all <- map_dfr(names(thresholds), function(label) {
     horizon_label = factor(paste0("T+", horizon), levels = paste0("T+", HORIZONS))
   )
 
-# Summary table
 fwd_summary <- fwd_all |>
   group_by(threshold, horizon, horizon_label) |>
   summarise(
@@ -323,12 +253,11 @@ fwd_summary <- fwd_all |>
     .groups    = "drop"
   )
 
-# Clustering — NA-safe
 cluster_tbl <- map_dfr(names(thresholds), function(label) {
   thresh   <- thresholds[[label]]
   fall_idx <- which(nifty$ret <= thresh)
   hits <- map_lgl(fall_idx, function(i) {
-    end_i <- min(i + 5, nrow(nifty))
+    end_i     <- min(i + 5, nrow(nifty))
     if (i + 1 > end_i) return(FALSE)
     next_rets <- nifty$ret[(i + 1):end_i]
     any(!is.na(next_rets) & next_rets <= thresh)
@@ -597,10 +526,10 @@ fwd_summary |>
   scale_y_continuous(labels = label_percent(scale = 1, suffix = "%")) +
   labs(
     title    = "Mean Forward Return After Each Fall Threshold",
-    subtitle = "Shaded band = 25th–75th percentile   ·   Dashed = zero return",
+    subtitle = "Shaded band = 25th-75th percentile   .   Dashed = zero return",
     x        = NULL,
     y        = "Mean Cumulative Return (%)",
-    caption  = "Source: Yahoo Finance (^NSEI) · 2010–present"
+    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
   ) +
   theme_report()
 ```
@@ -633,11 +562,11 @@ fwd_summary |>
   scale_x_continuous(breaks = HORIZONS, labels = paste0("T+", HORIZONS)) +
   scale_y_continuous(labels = label_percent(scale = 1), limits = c(40, 70)) +
   labs(
-    title    = "Probability of Being in Profit — By Horizon and Fall Size",
-    subtitle = "Dashed line = 50%   ·   Above = more often positive than not",
+    title    = "Probability of Being in Profit - By Horizon and Fall Size",
+    subtitle = "Dashed line = 50%   .   Above = more often positive than not",
     x        = NULL,
     y        = "% of Events Showing Positive Return",
-    caption  = "Source: Yahoo Finance (^NSEI) · 2010–present"
+    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
   ) +
   theme_report()
 ```
@@ -647,7 +576,7 @@ fwd_summary |>
 <div class="plot-caption">After a 3%+ fall, you are essentially coin-flipping on T+1. The probability only crosses 55% around T+10 to T+20.</div>
 
 <div class="callout">
-The longer you wait after the fall, the more likely you are in profit — but the gap between 1% and 3% fall events narrows over time. By T+20, all three thresholds converge around 55–60% positive.
+The longer you wait after the fall, the more likely you are in profit — but the gap between 1% and 3% fall events narrows over time. By T+20, all three thresholds converge around 55-60% positive.
 </div>
 
 ---
@@ -674,11 +603,11 @@ fwd_summary |>
   scale_x_continuous(breaks = HORIZONS, labels = paste0("T+", HORIZONS)) +
   scale_y_continuous(labels = label_percent(scale = 1), limits = c(0, 50)) +
   labs(
-    title    = "Left Tail Risk — Probability of Further Loss",
-    subtitle = "Solid = down >2%   ·   Dashed = down >5%",
+    title    = "Left Tail Risk - Probability of Further Loss",
+    subtitle = "Solid = down >2%   .   Dashed = down >5%",
     x        = NULL,
     y        = "% of Events",
-    caption  = "Source: Yahoo Finance (^NSEI) · 2010–present"
+    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
   ) +
   theme_report()
 ```
@@ -687,7 +616,7 @@ fwd_summary |>
 
 <div class="plot-caption">By T+10, roughly 1 in 4 events after a 1% fall are still down more than 2%. After a 3%+ fall, nearly 1 in 3 are.</div>
 
-The left tail grows steadily with horizon. This is not a fixed risk you take on day one and then get resolved — it compounds over time. The longer you sit in a position opened after a fall, the more likely you have encountered a second leg down somewhere along the way.
+The left tail grows steadily with horizon. This is not a fixed risk you take on day one and then get resolved — it compounds over time.
 
 ---
 
@@ -718,20 +647,18 @@ fwd_all |>
   scale_fill_manual(values = PAL) +
   scale_y_continuous(labels = label_percent(scale = 1, suffix = "%")) +
   labs(
-    title    = "Full Distribution of Forward Returns — by Fall Size",
-    subtitle = "Violin = distribution shape   ·   Box = IQR   ·   Dashed = zero",
+    title    = "Full Distribution of Forward Returns - by Fall Size",
+    subtitle = "Violin = distribution shape   .   Box = IQR   .   Dashed = zero",
     x        = NULL,
     y        = "Cumulative Return (%)",
-    caption  = "Source: Yahoo Finance (^NSEI) · 2010–present"
+    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
   ) +
   theme_report()
 ```
 
 <img src="nifty50-after-fall_files/figure-html/plot-violin-1.png" alt="" width="100%" />
 
-<div class="plot-caption">The 3%+ fall (purple) has a wider, flatter distribution — more extreme outcomes in both directions. The bounce when it comes is bigger, but so is the further fall when it doesn't.</div>
-
-Notice how the 3% fall distribution is wider than the 1% fall distribution. Bigger falls do not just produce bigger losses — they also produce bigger bounces. The variance is higher. This is the fundamental character of high-volatility events: the range of outcomes expands in both directions.
+<div class="plot-caption">The 3%+ fall (purple) has a wider, flatter distribution — more extreme outcomes in both directions.</div>
 
 ---
 
@@ -757,14 +684,14 @@ cluster_tbl |>
     subtitle = "After a fall, how often does another fall of the same size follow within 5 sessions?",
     x        = "Fall Threshold",
     y        = "Probability of Another Fall Within 5 Days",
-    caption  = "Source: Yahoo Finance (^NSEI) · 2010–present"
+    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
   ) +
   theme_report()
 ```
 
 <img src="nifty50-after-fall_files/figure-html/clustering-plot-1.png" alt="" width="100%" />
 
-<div class="plot-caption">The clustering rate drops as the threshold rises — 3%+ falls are rare enough that back-to-back occurrences are less common, but still happen more than 1 in 3 times.</div>
+<div class="plot-caption">The clustering rate drops as the threshold rises — but 3%+ falls still cluster more than 1 in 3 times.</div>
 
 
 ``` r
@@ -773,11 +700,11 @@ c2 <- cluster_tbl$cluster_rate[cluster_tbl$threshold == "2%+"]
 c3 <- cluster_tbl$cluster_rate[cluster_tbl$threshold == "3%+"]
 ```
 
-After a **1%+ fall**, the probability of another 1%+ fall within 5 days is **56.1%**. Falls are not independent coin flips. They happen in clusters — when the market starts moving, it tends to keep moving.
+After a **1%+ fall**, the probability of another 1%+ fall within 5 days is **56.1%**. Falls are not independent coin flips. They happen in clusters.
 
-After a **2%+ fall**, another 2%+ fall within 5 days: **30.2%**. Less frequent than 1% clustering but still above what you'd expect from a random distribution.
+After a **2%+ fall**, another 2%+ fall within 5 days: **30.2%**.
 
-After a **3%+ fall**, another 3%+ fall within 5 days: **25.9%**. Severe falls do cluster — panic days tend to come in groups, not isolation.
+After a **3%+ fall**, another 3%+ fall within 5 days: **25.9%**. Panic days tend to come in groups, not isolation.
 
 <div class="pullquote">
 Falls do not arrive cleanly spaced. One fall day makes the next one more likely, not less.
@@ -786,8 +713,6 @@ Falls do not arrive cleanly spaced. One fall day makes the next one more likely,
 ---
 
 # Does the Regime Matter? Low vs High Volatility
-
-The market environment at the time of the fall matters a lot. A 1% fall in a calm market is very different from a 1% fall when volatility is already elevated.
 
 
 ``` r
@@ -919,22 +844,24 @@ fwd_all |>
   )) +
   scale_x_continuous(labels = label_percent(scale = 1), limits = c(-18, 18)) +
   labs(
-    title    = "T+5 Return Distribution by Volatility Regime — for Each Fall Size",
-    subtitle = "Green = low vol · Amber = medium vol · Red = high vol",
+    title    = "T+5 Return Distribution by Volatility Regime - for Each Fall Size",
+    subtitle = "Green = low vol . Amber = medium vol . Red = high vol",
     x        = "T+5 Cumulative Return (%)",
     y        = "Density",
-    caption  = "Regime = 20-day realised vol tercile   ·   Source: Yahoo Finance (^NSEI)"
+    caption  = "Regime = 20-day realised vol tercile . Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report() +
-  theme(strip.background = element_rect(fill = "#1a1a2e", color = NA),
-        strip.text       = element_text(color = "white"))
+  theme(
+    strip.background = element_rect(fill = "#1a1a2e", color = NA),
+    strip.text       = element_text(color = "white")
+  )
 ```
 
 <img src="nifty50-after-fall_files/figure-html/plot-regime-density-1.png" alt="" width="100%" />
 
-<div class="plot-caption">In high-vol environments, all three fall sizes show a fat left tail and a nearly flat positive side. Low-vol falls look very different — tighter, more symmetric, and shifted right.</div>
+<div class="plot-caption">A 1% fall in a high-vol regime behaves more like a 3% fall in a low-vol regime.</div>
 
-The key finding here: **a 1% fall in a high-vol regime behaves more like a 3% fall in a low-vol regime**. The threshold alone does not tell you what happens next. The market environment at the time of the fall matters as much as the size of the fall itself.
+The key finding: **a 1% fall in a high-vol regime behaves more like a 3% fall in a low-vol regime**. The threshold alone does not tell you what happens next.
 
 ---
 
@@ -962,11 +889,11 @@ fwd_all |>
   scale_x_continuous(labels = label_percent(scale = 1), limits = c(-18, 18)) +
   facet_wrap(~ threshold, ncol = 3) +
   labs(
-    title    = "Full Distribution Across Horizons — for Each Fall Size",
-    subtitle = "Quantile lines at 10th · 50th · 90th   ·   Red = negative   ·   Green = positive",
+    title    = "Full Distribution Across Horizons - for Each Fall Size",
+    subtitle = "Quantile lines at 10th . 50th . 90th   .   Red = negative   .   Green = positive",
     x        = "Cumulative Return (%)",
     y        = NULL,
-    caption  = "Source: Yahoo Finance (^NSEI) · 2010–present"
+    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
   ) +
   theme_report(base = 11) +
   theme(
@@ -978,19 +905,12 @@ fwd_all |>
 
 <img src="nifty50-after-fall_files/figure-html/plot-ridge-1.png" alt="" width="100%" />
 
-<div class="plot-caption">Each panel shows how the distribution evolves as you extend the horizon. The widening at longer horizons is path dependency — more time means more opportunity for the market to move further in either direction.</div>
-
 ---
 
 # Recovery Speed: How Long Does It Take to Get Back?
 
-A different way to look at this — conditional on the market eventually recovering, how long does that take?
-
 
 ``` r
-# For each fall day, find first day within 60 sessions where close >= fall-day close
-# Done in tidy style: cross join fall days with horizons 1:60, filter, take first match
-
 MAX_HORIZON <- 60
 
 recovery_tbl <- map_dfr(names(thresholds), function(label) {
@@ -1003,13 +923,12 @@ recovery_tbl <- map_dfr(names(thresholds), function(label) {
       fall_close = nifty$close[fall_idx],
       threshold  = label
     ) |>
-    # For each fall, look up to MAX_HORIZON days ahead
     mutate(
       recovered_at = map_int(fall_idx, function(i) {
-        end_i    <- min(i + MAX_HORIZON, nrow(nifty))
+        end_i  <- min(i + MAX_HORIZON, nrow(nifty))
         if (i >= end_i) return(NA_integer_)
-        future   <- nifty$close[(i + 1):end_i]
-        hit      <- which(!is.na(future) & future >= nifty$close[i])
+        future <- nifty$close[(i + 1):end_i]
+        hit    <- which(!is.na(future) & future >= nifty$close[i])
         if (length(hit) == 0L) NA_integer_ else hit[1L]
       })
     )
@@ -1033,13 +952,13 @@ recovery_summary <- recovery_tbl |>
 ``` r
 recovery_summary |>
   transmute(
-    `Fall Size`         = threshold,
-    `Events`            = n_events,
-    `Recovered in 5d`   = paste0(round(pct_recover_5d, 1), "%"),
-    `Recovered in 10d`  = paste0(round(pct_recover_10d, 1), "%"),
-    `Recovered in 20d`  = paste0(round(pct_recover_20d, 1), "%"),
-    `Not in 60d`        = paste0(round(pct_no_recover, 1), "%"),
-    `Median Days`       = round(median_days, 0)
+    `Fall Size`        = threshold,
+    `Events`           = n_events,
+    `Recovered in 5d`  = paste0(round(pct_recover_5d, 1), "%"),
+    `Recovered in 10d` = paste0(round(pct_recover_10d, 1), "%"),
+    `Recovered in 20d` = paste0(round(pct_recover_20d, 1), "%"),
+    `Not in 60d`       = paste0(round(pct_no_recover, 1), "%"),
+    `Median Days`      = round(median_days, 0)
   ) |>
   kbl(align = c("l", "c", "c", "c", "c", "c", "c")) |>
   kable_styling(full_width = TRUE, bootstrap_options = c("hover")) |>
@@ -1099,20 +1018,18 @@ recovery_tbl |>
   scale_color_manual(values = PAL) +
   scale_x_continuous(breaks = c(1, 5, 10, 20, 40, 60)) +
   labs(
-    title    = "Recovery Time Distribution — How Many Days to Get Back to Pre-Fall Close?",
+    title    = "Recovery Time Distribution",
     subtitle = "Only events that recovered within 60 days shown",
     x        = "Trading Days to Recovery",
     y        = "Density",
-    caption  = "Source: Yahoo Finance (^NSEI) · 2010–present"
+    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
   ) +
   theme_report()
 ```
 
 <img src="nifty50-after-fall_files/figure-html/plot-recovery-1.png" alt="" width="100%" />
 
-<div class="plot-caption">1%+ falls recover quickly — most within 5 days. 3%+ falls have a much flatter distribution, with a meaningful mass out to 30–40 days or beyond.</div>
-
-The recovery speed difference is significant. After a **1% fall**, most events recover to their pre-fall level within a week. After a **3% fall**, recovery is slower, less predictable, and a larger fraction do not recover at all within 60 trading days (roughly 3 months).
+<div class="plot-caption">1%+ falls recover quickly — most within 5 days. 3%+ falls have a much flatter distribution, with meaningful mass out to 30-40 days.</div>
 
 <div class="pullquote">
 The bigger the fall, the longer and less certain the road back.
@@ -1136,12 +1053,12 @@ tibble(
   ),
   Answer = c(
     "On average yes, but only barely and with wide variance",
-    "Positive, but only 54–56% of the time — close to a coin flip",
+    "Positive, but only 54-56% of the time — close to a coin flip",
     "Yes. Bigger falls = lower bounce probability, wider outcome range, slower recovery",
     "No. Clustering is high — another fall of the same size within 5 days is common",
     "Significantly. High-vol falls have far worse forward return distributions",
-    "Median ~4–5 days. Most recover within a week",
-    "Median ~10–14 days. A meaningful fraction don't recover in 60 days"
+    "Median ~4-5 days. Most recover within a week",
+    "Median ~10-14 days. A meaningful fraction do not recover in 60 days"
   )
 ) |>
   kbl(align = c("l", "l")) |>
@@ -1164,7 +1081,7 @@ tibble(
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> Is T+1 more likely positive or negative? </td>
-   <td style="text-align:left;width: 65%; "> Positive, but only 54–56% of the time — close to a coin flip </td>
+   <td style="text-align:left;width: 65%; "> Positive, but only 54-56% of the time — close to a coin flip </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> Does fall size change the outcome? </td>
@@ -1180,15 +1097,15 @@ tibble(
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> How long to recover from a 1% fall? </td>
-   <td style="text-align:left;width: 65%; "> Median ~4–5 days. Most recover within a week </td>
+   <td style="text-align:left;width: 65%; "> Median ~4-5 days. Most recover within a week </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> How long to recover from a 3% fall? </td>
-   <td style="text-align:left;width: 65%; "> Median ~10–14 days. A meaningful fraction don't recover in 60 days </td>
+   <td style="text-align:left;width: 65%; "> Median ~10-14 days. A meaningful fraction do not recover in 60 days </td>
   </tr>
 </tbody>
 </table>
 
 ---
 
-*Data: Yahoo Finance `^NSEI` daily OHLC · 2010–present. Recovery defined as close returning to or above the pre-fall day close. Volatility regime: 20-day realised vol terciles as proxy for market stress. All figures are empirical from historical data, not modelled or projected.*
+*Data: Yahoo Finance `^NSEI` daily OHLC · 2010-present. Recovery defined as close returning to or above the pre-fall day close. Volatility regime: 20-day realised vol terciles as proxy for market stress.*
