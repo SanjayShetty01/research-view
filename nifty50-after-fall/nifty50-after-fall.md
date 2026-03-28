@@ -67,6 +67,7 @@ body {
   text-transform: uppercase;
 }
 
+<<<<<<< HEAD
 h1{
     font-family: 'Playfair Display', serif;
     font-size: 2.4rem;
@@ -75,6 +76,17 @@ h1{
     line-height: 1.2;
     margin-bottom: 0.5rem;
     }
+=======
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 5px;
+  margin-top: 2.2rem;
+}
+>>>>>>> 78d9d9d8ffced00cf8b11f4eb9954c51356ee155
 h2 {
   font-family: 'Source Serif 4', serif;
   font-size: 1.15rem;
@@ -85,6 +97,7 @@ h2 {
 
 /* Lead */
 .lead {
+<<<<<<< HEAD
     font-size: 1.05rem;
     color: #444;
     font-style: italic;
@@ -93,6 +106,16 @@ h2 {
     margin: 0 0 2.5rem 0;
     background: #fff8f7;
     border-radius: 0 6px 6px 0;
+=======
+  font-size: 1.12rem;
+  color: #444;
+  font-style: italic;
+  border-left: 4px solid #e74c3c;
+  padding: 0.6rem 1.2rem;
+  margin: 1rem 0 1.8rem 0;
+  background: #fff8f7;
+  border-radius: 0 6px 6px 0;
+>>>>>>> 78d9d9d8ffced00cf8b11f4eb9954c51356ee155
 }
 
 /* Pull quote */
