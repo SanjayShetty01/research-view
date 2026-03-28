@@ -11,13 +11,212 @@ output:
     code_folding: hide
     self_contained: true
     keep_md: yes
-    css: "https://sanjayshetty01.github.io/research-view/styles.css"
 ---
 
-<style type="text/css">
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ── Layout ───────────────────────────── */
+```{=html}
+<style type="text/css">*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.85;
+  color: #1a1a2e;
+  background: #fafaf8;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ── Header ─────────────────────────────────────── */
+header {
+  padding: 3.5rem 0 2.5rem;
+  border-bottom: 2px solid #e74c3c;
+  margin-bottom: 2.5rem;
+}
+
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+header .subtitle {
+  font-size: 1.05rem;
+  color: #555;
+  font-style: italic;
+  max-width: 600px;
+}
+
+/* ── Lead / About ──────────────────────────────── */
+.lead {
+  font-size: 1.05rem;
+  color: #444;
+  font-style: italic;
+  border-left: 4px solid #e74c3c;
+  padding: 0.6rem 1.2rem;
+  margin: 0 0 2.5rem 0;
+  background: #fff8f7;
+  border-radius: 0 6px 6px 0;
+}
+
+/* ── Section heading ───────────────────────────── */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 5px;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Report cards ──────────────────────────────── */
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-bottom: 3rem;
+}
+
+.report-card {
+  background: #ffffff;
+  border: 1px solid #e8eaed;
+  border-radius: 8px;
+  padding: 1.5rem 1.6rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.report-card:hover {
+  border-color: #1a3c5e;
+  box-shadow: 0 4px 16px rgba(26, 26, 46, 0.08);
+}
+
+.report-card .card-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #888;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.report-card .card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+
+.report-card .card-desc {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 0.7rem;
+}
+
+.report-card .card-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.report-card .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #1a1a2e;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 4px;
+}
+
+.tag.red   { background: #e74c3c; }
+.tag.amber { background: #e67e22; }
+.tag.blue  { background: #1a3c5e; }
+.tag.purple{ background: #8e44ad; }
+
+/* ── Stat row (mirrors report) ─────────────────── */
+.stat-row {
+  display: flex;
+  gap: 14px;
+  margin: 1.4rem 0 2.5rem;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 140px;
+  background: #1a1a2e;
+  color: white;
+  border-radius: 8px;
+  padding: 1rem 0.9rem;
+  text-align: center;
+}
+
+.stat-box .stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  display: block;
+  line-height: 1.1;
+}
+
+.stat-num.red   { color: #e74c3c; }
+.stat-num.blue  { color: #5dade2; }
+.stat-num.green { color: #58d68d; }
+.stat-num.amber { color: #f39c12; }
+
+.stat-box .stat-sub {
+  font-size: 0.68rem;
+  opacity: 0.45;
+  margin-top: 2px;
+  display: block;
+}
+
+.stat-box .stat-label {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: block;
+}
+
+/* ── Footer ────────────────────────────────────── */
+footer {
+  border-top: 1px solid #e0e0e0;
+  padding: 1.5rem 0 2rem;
+  margin-top: 2rem;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+footer a {
+  color: #1a3c5e;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+
 .main-container {
   max-width: 960px;
   margin-left: auto;
@@ -32,7 +231,6 @@ output:
   color: #1a1a2e;
   line-height: 1.2;
 }
-
 .date {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
@@ -41,7 +239,7 @@ output:
   text-transform: uppercase;
 }
 
-/* ── Headings ── */
+/* ── Section headings (Rmd h1/h2 override) ── */
 h1 {
   font-family: 'Playfair Display', serif;
   font-size: 1.65rem;
@@ -51,7 +249,6 @@ h1 {
   padding-bottom: 5px;
   margin-top: 2.2rem;
 }
-
 h2 {
   font-family: 'Source Serif 4', serif;
   font-size: 1.15rem;
@@ -74,7 +271,7 @@ h2 {
   line-height: 1.6;
 }
 
-/* ── Callout ── */
+/* ── Callout boxes ── */
 .callout {
   background: #fff3cd;
   border-left: 4px solid #f39c12;
@@ -86,15 +283,6 @@ h2 {
 .callout.red   { background: #fdecea; border-left-color: #e74c3c; }
 .callout.blue  { background: #eaf4fb; border-left-color: #1a3c5e; }
 .callout.green { background: #eafaf1; border-left-color: #27ae60; }
-
-/* ── Stat extras not in site CSS ── */
-.stat-num.amber { color: #f39c12; }
-.stat-box .stat-sub {
-  font-size: 0.68rem;
-  opacity: 0.45;
-  margin-top: 2px;
-  display: block;
-}
 
 /* ── Tables ── */
 table {
@@ -111,7 +299,7 @@ tbody tr:nth-child(odd)  { background: #ffffff; }
 tbody td { padding: 7px 13px; text-align: center; border-bottom: 1px solid #e8eaed; }
 tbody td:first-child { text-align: left; font-weight: 600; }
 
-/* ── Code ── */
+/* ── Code blocks ── */
 pre, code {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.81rem;
@@ -119,7 +307,7 @@ pre, code {
   border-radius: 4px;
 }
 
-/* ── Misc ── */
+/* ── Plot captions ── */
 .plot-caption {
   font-size: 0.81rem;
   color: #888;
@@ -134,6 +322,20 @@ hr {
   border-top: 1px solid #e0e0e0;
   margin: 1.8rem 0;
 }
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 600px) {
+  header h1 { font-size: 1.8rem; }
+  .report-card { padding: 1.1rem; }
+  .report-card .card-title { font-size: 1.1rem; }
+  .stat-row { flex-direction: column; }
+
+</style>
+```
+
+<style type="text/css">
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
 </style>
 
 
@@ -269,10 +471,10 @@ cluster_tbl <- map_dfr(names(thresholds), function(label) {
 ---
 
 <div class="lead">
-When Nifty falls 1%, 2%, or 3% in a single day — does it bounce, continue falling, or just drift sideways? This is a pure price-behaviour study. No strategy attached. Just what the data shows.
+When Nifty falls 1%, 2%, or 3% in a single day, does it bounce, continue falling, or just drift sideways? This is a pure price-behaviour study. No strategy attached. Just what the data shows.
 </div>
 
-<div class="stat-row"><div class="stat-box"><span class="stat-num amber">471</span><span class="stat-label">Days with 1%+ fall</span><span class="stat-sub">11.8% of all sessions</span></div><div class="stat-box"><span class="stat-num red">106</span><span class="stat-label">Days with 2%+ fall</span><span class="stat-sub">2.7% of all sessions</span></div><div class="stat-box"><span class="stat-num" style="color:#c39bd3">27</span><span class="stat-label">Days with 3%+ fall</span><span class="stat-sub">0.7% of all sessions</span></div><div class="stat-box"><span class="stat-num blue">3986</span><span class="stat-label">Total trading days</span><span class="stat-sub">2010 – present</span></div></div>
+<div class="stat-row"><div class="stat-box"><span class="stat-num green">471</span><span class="stat-label">Days with 1%+ fall</span><span class="stat-sub">11.8% of all sessions</span></div><div class="stat-box"><span class="stat-num red">106</span><span class="stat-label">Days with 2%+ fall</span><span class="stat-sub">2.7% of all sessions</span></div><div class="stat-box"><span class="stat-num amber">27</span><span class="stat-label">Days with 3%+ fall</span><span class="stat-sub">0.7% of all sessions</span></div><div class="stat-box"><span class="stat-num blue">3986</span><span class="stat-label">Total trading days</span><span class="stat-sub">Jan 2010 – Mar 2026</span></div></div>
 
 ---
 
@@ -529,7 +731,7 @@ fwd_summary |>
     subtitle = "Shaded band = 25th-75th percentile   .   Dashed = zero return",
     x        = NULL,
     y        = "Mean Cumulative Return (%)",
-    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
+    caption  = "Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report()
 ```
@@ -538,7 +740,7 @@ fwd_summary |>
 
 <div class="plot-caption">Mean returns look encouraging. The IQR band tells you how wide the uncertainty is around that mean.</div>
 
-A 1% fall does tend to recover slowly on average. A 3% fall has a weaker mean path — the recovery, when it comes, takes longer and is less consistent.
+A 1% fall does tend to recover slowly on average. A 3% fall has a weaker mean path, the recovery, when it comes, takes longer and is less consistent.
 
 ---
 
@@ -566,7 +768,7 @@ fwd_summary |>
     subtitle = "Dashed line = 50%   .   Above = more often positive than not",
     x        = NULL,
     y        = "% of Events Showing Positive Return",
-    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
+    caption  = "Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report()
 ```
@@ -576,14 +778,14 @@ fwd_summary |>
 <div class="plot-caption">After a 3%+ fall, you are essentially coin-flipping on T+1. The probability only crosses 55% around T+10 to T+20.</div>
 
 <div class="callout">
-The longer you wait after the fall, the more likely you are in profit — but the gap between 1% and 3% fall events narrows over time. By T+20, all three thresholds converge around 55-60% positive.
+The longer you wait after the fall, the more likely you are in profit, but the gap between 1% and 3% fall events narrows over time. By T+20, all three thresholds converge around 55-60% positive.
 </div>
 
 ---
 
 # The Left Tail Is What Actually Matters
 
-The mean and % positive tell you about the average case. The left tail tells you about the painful case — and painful cases are far more common than people expect.
+The mean and % positive tell you about the average case. The left tail tells you about the painful case, and painful cases are far more common than people expect.
 
 
 ``` r
@@ -607,7 +809,7 @@ fwd_summary |>
     subtitle = "Solid = down >2%   .   Dashed = down >5%",
     x        = NULL,
     y        = "% of Events",
-    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
+    caption  = "Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report()
 ```
@@ -616,7 +818,7 @@ fwd_summary |>
 
 <div class="plot-caption">By T+10, roughly 1 in 4 events after a 1% fall are still down more than 2%. After a 3%+ fall, nearly 1 in 3 are.</div>
 
-The left tail grows steadily with horizon. This is not a fixed risk you take on day one and then get resolved — it compounds over time.
+The left tail grows steadily with horizon. This is not a fixed risk you take on day one and then get resolved, it compounds over time.
 
 ---
 
@@ -651,14 +853,14 @@ fwd_all |>
     subtitle = "Violin = distribution shape   .   Box = IQR   .   Dashed = zero",
     x        = NULL,
     y        = "Cumulative Return (%)",
-    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
+    caption  = "Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report()
 ```
 
 <img src="nifty50-after-fall_files/figure-html/plot-violin-1.png" alt="" width="100%" />
 
-<div class="plot-caption">The 3%+ fall (purple) has a wider, flatter distribution — more extreme outcomes in both directions.</div>
+<div class="plot-caption">The 3%+ fall (purple) has a wider, flatter distribution, more extreme outcomes in both directions.</div>
 
 ---
 
@@ -684,14 +886,14 @@ cluster_tbl |>
     subtitle = "After a fall, how often does another fall of the same size follow within 5 sessions?",
     x        = "Fall Threshold",
     y        = "Probability of Another Fall Within 5 Days",
-    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
+    caption  = "Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report()
 ```
 
 <img src="nifty50-after-fall_files/figure-html/clustering-plot-1.png" alt="" width="100%" />
 
-<div class="plot-caption">The clustering rate drops as the threshold rises — but 3%+ falls still cluster more than 1 in 3 times.</div>
+<div class="plot-caption">The clustering rate drops as the threshold rises, but 3%+ falls still cluster more than 1 in 3 times.</div>
 
 
 ``` r
@@ -893,7 +1095,7 @@ fwd_all |>
     subtitle = "Quantile lines at 10th . 50th . 90th   .   Red = negative   .   Green = positive",
     x        = "Cumulative Return (%)",
     y        = NULL,
-    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
+    caption  = "Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report(base = 11) +
   theme(
@@ -1022,14 +1224,14 @@ recovery_tbl |>
     subtitle = "Only events that recovered within 60 days shown",
     x        = "Trading Days to Recovery",
     y        = "Density",
-    caption  = "Source: Yahoo Finance (^NSEI) 2010-present"
+    caption  = "Source: Yahoo Finance (^NSEI)"
   ) +
   theme_report()
 ```
 
 <img src="nifty50-after-fall_files/figure-html/plot-recovery-1.png" alt="" width="100%" />
 
-<div class="plot-caption">1%+ falls recover quickly — most within 5 days. 3%+ falls have a much flatter distribution, with meaningful mass out to 30-40 days.</div>
+<div class="plot-caption">1%+ falls recover quickly, most within 5 days. 3%+ falls have a much flatter distribution, with meaningful mass out to 30-40 days.</div>
 
 <div class="pullquote">
 The bigger the fall, the longer and less certain the road back.
@@ -1053,9 +1255,9 @@ tibble(
   ),
   Answer = c(
     "On average yes, but only barely and with wide variance",
-    "Positive, but only 54-56% of the time — close to a coin flip",
+    "Positive, but only 54-56% of the time, close to a coin flip",
     "Yes. Bigger falls = lower bounce probability, wider outcome range, slower recovery",
-    "No. Clustering is high — another fall of the same size within 5 days is common",
+    "No. Clustering is high, another fall of the same size within 5 days is common",
     "Significantly. High-vol falls have far worse forward return distributions",
     "Median ~4-5 days. Most recover within a week",
     "Median ~10-14 days. A meaningful fraction do not recover in 60 days"
@@ -1081,7 +1283,7 @@ tibble(
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> Is T+1 more likely positive or negative? </td>
-   <td style="text-align:left;width: 65%; "> Positive, but only 54-56% of the time — close to a coin flip </td>
+   <td style="text-align:left;width: 65%; "> Positive, but only 54-56% of the time, close to a coin flip </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> Does fall size change the outcome? </td>
@@ -1089,7 +1291,7 @@ tibble(
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> Are falls independent events? </td>
-   <td style="text-align:left;width: 65%; "> No. Clustering is high — another fall of the same size within 5 days is common </td>
+   <td style="text-align:left;width: 65%; "> No. Clustering is high, another fall of the same size within 5 days is common </td>
   </tr>
   <tr>
    <td style="text-align:left;width: 35%; font-weight: bold;"> Does the vol regime matter? </td>
@@ -1108,4 +1310,4 @@ tibble(
 
 ---
 
-*Data: Yahoo Finance `^NSEI` daily OHLC · 2010-present. Recovery defined as close returning to or above the pre-fall day close. Volatility regime: 20-day realised vol terciles as proxy for market stress.*
+*Data: Yahoo Finance `^NSEI` daily OHLC. Recovery defined as close returning to or above the pre-fall day close. Volatility regime: 20-day realised vol terciles as proxy for market stress.*
