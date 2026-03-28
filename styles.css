@@ -160,6 +160,14 @@ header .subtitle {
 .stat-num.red   { color: #e74c3c; }
 .stat-num.blue  { color: #5dade2; }
 .stat-num.green { color: #58d68d; }
+.stat-num.amber { color: #f39c12; }
+
+.stat-box .stat-sub {
+  font-size: 0.68rem;
+  opacity: 0.45;
+  margin-top: 2px;
+  display: block;
+}
 
 .stat-box .stat-label {
   font-size: 0.7rem;
@@ -189,6 +197,113 @@ footer a {
 
 footer a:hover {
   text-decoration: underline;
+}
+
+
+.main-container {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Title block ── */
+.title {
+  font-family: 'Playfair Display', serif !important;
+  font-size: 2.4rem !important;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.2;
+}
+.date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #888;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Section headings (Rmd h1/h2 override) ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 5px;
+  margin-top: 2.2rem;
+}
+h2 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-top: 1.6rem;
+}
+
+/* ── Pull quote ── */
+.pullquote {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #1a3c5e;
+  border-top: 2px solid #1a3c5e;
+  border-bottom: 2px solid #1a3c5e;
+  padding: 0.9rem 0.5rem;
+  margin: 1.8rem 1.5rem;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── Callout boxes ── */
+.callout {
+  background: #fff3cd;
+  border-left: 4px solid #f39c12;
+  padding: 0.7rem 1.1rem;
+  margin: 1rem 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.95rem;
+}
+.callout.red   { background: #fdecea; border-left-color: #e74c3c; }
+.callout.blue  { background: #eaf4fb; border-left-color: #1a3c5e; }
+.callout.green { background: #eafaf1; border-left-color: #27ae60; }
+
+/* ── Tables ── */
+table {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8rem 0 1.4rem 0;
+}
+thead tr { background: #1a1a2e; color: white; }
+thead th { padding: 9px 13px; text-align: center; font-weight: 500; }
+tbody tr:nth-child(even) { background: #f7f9fc; }
+tbody tr:nth-child(odd)  { background: #ffffff; }
+tbody td { padding: 7px 13px; text-align: center; border-bottom: 1px solid #e8eaed; }
+tbody td:first-child { text-align: left; font-weight: 600; }
+
+/* ── Code blocks ── */
+pre, code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.81rem;
+  background: #f4f4f8;
+  border-radius: 4px;
+}
+
+/* ── Plot captions ── */
+.plot-caption {
+  font-size: 0.81rem;
+  color: #888;
+  text-align: center;
+  margin-top: -0.4rem;
+  margin-bottom: 1.4rem;
+  font-style: italic;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 1.8rem 0;
 }
 
 /* ── Responsive ────────────────────────────────── */
