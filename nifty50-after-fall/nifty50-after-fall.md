@@ -1,6 +1,6 @@
 ---
 title: "Nifty 50: How Does the Market Move After a Big Fall?"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
+date: "March 28, 2026"
 output:
   html_document:
     theme: flatly
@@ -17,7 +17,7 @@ output:
 ---
 
 
-```{css, echo=FALSE}
+<style type="text/css">
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
 body {
@@ -202,22 +202,12 @@ hr {
   border-top: 1px solid #e0e0e0;
   margin: 1.8rem 0;
 }
-```
+</style>
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  echo       = TRUE,
-  message    = FALSE,
-  warning    = FALSE,
-  fig.width  = 10,
-  fig.height = 5.5,
-  dpi        = 150,
-  out.width  = "100%"
-)
 
-```
 
-```{r libs}
+
+``` r
 library(quantmod)
 library(tidyverse)
 library(scales)
@@ -255,7 +245,8 @@ PAL <- c(
 HORIZONS <- c(1, 2, 3, 5, 10, 15, 20)
 ```
 
-```{r data, results='hide', message=FALSE, warning=FALSE , cache=TRUE}
+
+``` r
 getSymbols("^NSEI", from = "2010-01-01", to = Sys.Date(), auto.assign = TRUE)
 
 nifty <- NSEI |>
@@ -284,7 +275,8 @@ nifty <- NSEI |>
   drop_na(ret)
 ```
 
-```{r compute-fwd}
+
+``` r
 # Build forward returns for all three thresholds
 thresholds <- list("1%+" = -0.01, "2%+" = -0.02, "3%+" = -0.03)
 
@@ -352,40 +344,7 @@ cluster_tbl <- map_dfr(names(thresholds), function(label) {
 When Nifty falls 1%, 2%, or 3% in a single day — does it bounce, continue falling, or just drift sideways? This is a pure price-behaviour study. No strategy attached. Just what the data shows.
 </div>
 
-```{r stat-boxes, echo=FALSE, results="asis"}
-n1   <- sum(nifty$ret <= -0.01, na.rm = TRUE)
-n2   <- sum(nifty$ret <= -0.02, na.rm = TRUE)
-n3   <- sum(nifty$ret <= -0.03, na.rm = TRUE)
-nd   <- nrow(nifty)
-pct1 <- percent(mean(nifty$ret <= -0.01, na.rm = TRUE), 0.1)
-pct2 <- percent(mean(nifty$ret <= -0.02, na.rm = TRUE), 0.1)
-pct3 <- percent(mean(nifty$ret <= -0.03, na.rm = TRUE), 0.1)
-
-cat(paste0(
-  '<div class="stat-row">',
-    '<div class="stat-box">',
-      '<span class="stat-num amber">', n1, '</span>',
-      '<span class="stat-label">Days with 1%+ fall</span>',
-      '<span class="stat-sub">', pct1, ' of all sessions</span>',
-    '</div>',
-    '<div class="stat-box">',
-      '<span class="stat-num red">', n2, '</span>',
-      '<span class="stat-label">Days with 2%+ fall</span>',
-      '<span class="stat-sub">', pct2, ' of all sessions</span>',
-    '</div>',
-    '<div class="stat-box">',
-      '<span class="stat-num" style="color:#c39bd3">', n3, '</span>',
-      '<span class="stat-label">Days with 3%+ fall</span>',
-      '<span class="stat-sub">', pct3, ' of all sessions</span>',
-    '</div>',
-    '<div class="stat-box">',
-      '<span class="stat-num blue">', nd, '</span>',
-      '<span class="stat-label">Total trading days</span>',
-      '<span class="stat-sub">2010 – present</span>',
-    '</div>',
-  '</div>'
-))
-```
+<div class="stat-row"><div class="stat-box"><span class="stat-num amber">471</span><span class="stat-label">Days with 1%+ fall</span><span class="stat-sub">11.8% of all sessions</span></div><div class="stat-box"><span class="stat-num red">106</span><span class="stat-label">Days with 2%+ fall</span><span class="stat-sub">2.7% of all sessions</span></div><div class="stat-box"><span class="stat-num" style="color:#c39bd3">27</span><span class="stat-label">Days with 3%+ fall</span><span class="stat-sub">0.7% of all sessions</span></div><div class="stat-box"><span class="stat-num blue">3986</span><span class="stat-label">Total trading days</span><span class="stat-sub">2010 – present</span></div></div>
 
 ---
 
@@ -393,7 +352,8 @@ cat(paste0(
 
 The short answer is: sometimes, but not reliably, and the bigger the fall the weaker the immediate recovery.
 
-```{r table-summary}
+
+``` r
 tbl_fwd <- fwd_summary |>
   filter(horizon %in% c(1, 2, 3, 5, 10, 20)) |>
   arrange(threshold, horizon) |>
@@ -420,11 +380,209 @@ tbl_fwd |>
   column_spec(8, color = "#8e44ad")
 ```
 
+<table class="table table-hover" style="color: black; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Fall Size </th>
+   <th style="text-align:left;"> Horizon </th>
+   <th style="text-align:center;"> Mean Return </th>
+   <th style="text-align:center;"> Median </th>
+   <th style="text-align:center;"> % Positive </th>
+   <th style="text-align:center;"> % Up &gt;2% </th>
+   <th style="text-align:center;"> % Down &gt;2% </th>
+   <th style="text-align:center;"> % Down &gt;5% </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;"> T+1 </td>
+   <td style="text-align:center;"> +0.04% </td>
+   <td style="text-align:center;"> +0% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 50% </td>
+   <td style="text-align:center;"> 6% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 5.3% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 0.2% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;"> T+2 </td>
+   <td style="text-align:center;"> +0.11% </td>
+   <td style="text-align:center;"> +0.08% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 51.1% </td>
+   <td style="text-align:center;"> 14.5% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 11.3% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 1.1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;"> T+3 </td>
+   <td style="text-align:center;"> +0.2% </td>
+   <td style="text-align:center;"> +0.26% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 54.7% </td>
+   <td style="text-align:center;"> 18.9% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 15.3% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 1.7% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;"> T+5 </td>
+   <td style="text-align:center;"> +0.29% </td>
+   <td style="text-align:center;"> +0.43% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 55% </td>
+   <td style="text-align:center;"> 25.2% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 19.2% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 2.6% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;"> T+10 </td>
+   <td style="text-align:center;"> +0.55% </td>
+   <td style="text-align:center;"> +0.66% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 58.2% </td>
+   <td style="text-align:center;"> 36.8% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 23.3% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 8.1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;"> T+20 </td>
+   <td style="text-align:center;"> +1.24% </td>
+   <td style="text-align:center;"> +1.37% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 61.2% </td>
+   <td style="text-align:center;"> 44% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 24.5% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 11.1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;"> T+1 </td>
+   <td style="text-align:center;"> +0.32% </td>
+   <td style="text-align:center;"> +0.15% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 58.1% </td>
+   <td style="text-align:center;"> 14.3% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 7.6% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;"> T+2 </td>
+   <td style="text-align:center;"> +0.35% </td>
+   <td style="text-align:center;"> +0.39% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 53.3% </td>
+   <td style="text-align:center;"> 25.7% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 13.3% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 3.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;"> T+3 </td>
+   <td style="text-align:center;"> +0.5% </td>
+   <td style="text-align:center;"> +0.82% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 59% </td>
+   <td style="text-align:center;"> 29.5% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 19% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 4.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;"> T+5 </td>
+   <td style="text-align:center;"> +0.3% </td>
+   <td style="text-align:center;"> +0.57% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 54.8% </td>
+   <td style="text-align:center;"> 32.7% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 20.2% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 5.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;"> T+10 </td>
+   <td style="text-align:center;"> +0.87% </td>
+   <td style="text-align:center;"> +1.24% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 58.8% </td>
+   <td style="text-align:center;"> 46.1% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 26.5% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 8.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;"> T+20 </td>
+   <td style="text-align:center;"> +2.09% </td>
+   <td style="text-align:center;"> +2.02% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 67.6% </td>
+   <td style="text-align:center;"> 51% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 15.7% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 8.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:left;"> T+1 </td>
+   <td style="text-align:center;"> +0.77% </td>
+   <td style="text-align:center;"> +0.78% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 70.4% </td>
+   <td style="text-align:center;"> 25.9% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 11.1% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:left;"> T+2 </td>
+   <td style="text-align:center;"> +1.09% </td>
+   <td style="text-align:center;"> +1.89% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 66.7% </td>
+   <td style="text-align:center;"> 48.1% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 14.8% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 7.4% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:left;"> T+3 </td>
+   <td style="text-align:center;"> +1.12% </td>
+   <td style="text-align:center;"> +1.93% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 70.4% </td>
+   <td style="text-align:center;"> 48.1% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 22.2% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 11.1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:left;"> T+5 </td>
+   <td style="text-align:center;"> +0.97% </td>
+   <td style="text-align:center;"> +2.08% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 63% </td>
+   <td style="text-align:center;"> 51.9% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 11.1% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 11.1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:left;"> T+10 </td>
+   <td style="text-align:center;"> +1.25% </td>
+   <td style="text-align:center;"> +2.55% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 53.8% </td>
+   <td style="text-align:center;"> 53.8% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 26.9% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 19.2% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:left;"> T+20 </td>
+   <td style="text-align:center;"> +4.24% </td>
+   <td style="text-align:center;"> +6.05% </td>
+   <td style="text-align:center;color: rgba(39, 174, 96, 255) !important;"> 84.6% </td>
+   <td style="text-align:center;"> 69.2% </td>
+   <td style="text-align:center;color: rgba(231, 76, 60, 255) !important;"> 11.5% </td>
+   <td style="text-align:center;color: rgba(142, 68, 173, 255) !important;"> 11.5% </td>
+  </tr>
+</tbody>
+</table>
+
 ## Mean Return Path
 
 The mean line is the most misleading summary. It looks positive at most horizons. But means are pulled up by sharp bounce days and do not reflect what most fall events actually deliver.
 
-```{r plot-mean-path, fig.height=5}
+
+``` r
 fwd_summary |>
   ggplot(aes(x = horizon, y = mean_ret, color = threshold, group = threshold)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey60", linewidth = 0.6) +
@@ -448,6 +606,8 @@ fwd_summary |>
   theme_report()
 ```
 
+<img src="nifty50-after-fall_files/figure-html/plot-mean-path-1.png" alt="" width="100%" />
+
 <div class="plot-caption">Mean returns look encouraging. The IQR band tells you how wide the uncertainty is around that mean.</div>
 
 A 1% fall does tend to recover slowly on average. A 3% fall has a weaker mean path — the recovery, when it comes, takes longer and is less consistent.
@@ -458,7 +618,8 @@ A 1% fall does tend to recover slowly on average. A 3% fall has a weaker mean pa
 
 The mean being positive does not mean you get a bounce. More than 40% of the time, the market is still lower at T+1 after a 1% fall. After a 3% fall, it is closer to half.
 
-```{r plot-pct-pos, fig.height=5}
+
+``` r
 fwd_summary |>
   ggplot(aes(x = horizon, y = pct_pos, color = threshold, group = threshold)) +
   geom_hline(yintercept = 50, linetype = "dashed", color = "grey50", linewidth = 0.6) +
@@ -482,6 +643,8 @@ fwd_summary |>
   theme_report()
 ```
 
+<img src="nifty50-after-fall_files/figure-html/plot-pct-pos-1.png" alt="" width="100%" />
+
 <div class="plot-caption">After a 3%+ fall, you are essentially coin-flipping on T+1. The probability only crosses 55% around T+10 to T+20.</div>
 
 <div class="callout">
@@ -494,7 +657,8 @@ The longer you wait after the fall, the more likely you are in profit — but th
 
 The mean and % positive tell you about the average case. The left tail tells you about the painful case — and painful cases are far more common than people expect.
 
-```{r plot-tail, fig.height=5.5}
+
+``` r
 fwd_summary |>
   select(threshold, horizon_label, horizon, pct_dn_2, pct_dn_5) |>
   pivot_longer(
@@ -520,6 +684,8 @@ fwd_summary |>
   theme_report()
 ```
 
+<img src="nifty50-after-fall_files/figure-html/plot-tail-1.png" alt="" width="100%" />
+
 <div class="plot-caption">By T+10, roughly 1 in 4 events after a 1% fall are still down more than 2%. After a 3%+ fall, nearly 1 in 3 are.</div>
 
 The left tail grows steadily with horizon. This is not a fixed risk you take on day one and then get resolved — it compounds over time. The longer you sit in a position opened after a fall, the more likely you have encountered a second leg down somewhere along the way.
@@ -528,7 +694,8 @@ The left tail grows steadily with horizon. This is not a fixed risk you take on 
 
 # Full Distribution: How Spread Out Are Outcomes?
 
-```{r plot-violin, fig.height=7}
+
+``` r
 fwd_all |>
   filter(horizon %in% c(1, 3, 5, 10, 20)) |>
   ggplot(aes(x = horizon_label, y = fwd_ret, fill = threshold)) +
@@ -561,6 +728,8 @@ fwd_all |>
   theme_report()
 ```
 
+<img src="nifty50-after-fall_files/figure-html/plot-violin-1.png" alt="" width="100%" />
+
 <div class="plot-caption">The 3%+ fall (purple) has a wider, flatter distribution — more extreme outcomes in both directions. The bounce when it comes is bigger, but so is the further fall when it doesn't.</div>
 
 Notice how the 3% fall distribution is wider than the 1% fall distribution. Bigger falls do not just produce bigger losses — they also produce bigger bounces. The variance is higher. This is the fundamental character of high-volatility events: the range of outcomes expands in both directions.
@@ -569,7 +738,8 @@ Notice how the 3% fall distribution is wider than the 1% fall distribution. Bigg
 
 # Volatility Clustering: Does the Fall Attract More Falls?
 
-```{r clustering-plot, fig.height=4}
+
+``` r
 cluster_tbl |>
   mutate(threshold = fct_relevel(threshold, "1%+", "2%+", "3%+")) |>
   ggplot(aes(x = threshold, y = cluster_rate, fill = threshold)) +
@@ -593,19 +763,22 @@ cluster_tbl |>
   theme_report()
 ```
 
+<img src="nifty50-after-fall_files/figure-html/clustering-plot-1.png" alt="" width="100%" />
+
 <div class="plot-caption">The clustering rate drops as the threshold rises — 3%+ falls are rare enough that back-to-back occurrences are less common, but still happen more than 1 in 3 times.</div>
 
-```{r cluster-callouts}
+
+``` r
 c1 <- cluster_tbl$cluster_rate[cluster_tbl$threshold == "1%+"]
 c2 <- cluster_tbl$cluster_rate[cluster_tbl$threshold == "2%+"]
 c3 <- cluster_tbl$cluster_rate[cluster_tbl$threshold == "3%+"]
 ```
 
-After a **1%+ fall**, the probability of another 1%+ fall within 5 days is **`r percent(c1, 0.1)`**. Falls are not independent coin flips. They happen in clusters — when the market starts moving, it tends to keep moving.
+After a **1%+ fall**, the probability of another 1%+ fall within 5 days is **56.1%**. Falls are not independent coin flips. They happen in clusters — when the market starts moving, it tends to keep moving.
 
-After a **2%+ fall**, another 2%+ fall within 5 days: **`r percent(c2, 0.1)`**. Less frequent than 1% clustering but still above what you'd expect from a random distribution.
+After a **2%+ fall**, another 2%+ fall within 5 days: **30.2%**. Less frequent than 1% clustering but still above what you'd expect from a random distribution.
 
-After a **3%+ fall**, another 3%+ fall within 5 days: **`r percent(c3, 0.1)`**. Severe falls do cluster — panic days tend to come in groups, not isolation.
+After a **3%+ fall**, another 3%+ fall within 5 days: **25.9%**. Severe falls do cluster — panic days tend to come in groups, not isolation.
 
 <div class="pullquote">
 Falls do not arrive cleanly spaced. One fall day makes the next one more likely, not less.
@@ -617,7 +790,8 @@ Falls do not arrive cleanly spaced. One fall day makes the next one more likely,
 
 The market environment at the time of the fall matters a lot. A 1% fall in a calm market is very different from a 1% fall when volatility is already elevated.
 
-```{r regime-summary}
+
+``` r
 regime_fwd <- fwd_all |>
   filter(horizon == 5) |>
   group_by(threshold, vol_regime) |>
@@ -656,7 +830,78 @@ tbl_regime |>
   column_spec(2, color = regime_colors, bold = TRUE)
 ```
 
-```{r plot-regime-density, fig.height=6}
+<table class="table table-hover" style="color: black; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Fall Size </th>
+   <th style="text-align:left;"> Vol Regime </th>
+   <th style="text-align:center;"> N Events </th>
+   <th style="text-align:center;"> Mean T+5 </th>
+   <th style="text-align:center;"> % Positive </th>
+   <th style="text-align:center;"> % Down &gt;2% </th>
+   <th style="text-align:center;"> % Down &gt;5% </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;font-weight: bold;color: rgba(39, 174, 96, 255) !important;"> Low Vol </td>
+   <td style="text-align:center;"> 58 </td>
+   <td style="text-align:center;"> +0.17% </td>
+   <td style="text-align:center;"> 56.9% </td>
+   <td style="text-align:center;"> 10.3% </td>
+   <td style="text-align:center;"> 0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;font-weight: bold;color: rgba(243, 156, 18, 255) !important;"> Medium Vol </td>
+   <td style="text-align:center;"> 145 </td>
+   <td style="text-align:center;"> +0.05% </td>
+   <td style="text-align:center;"> 51.7% </td>
+   <td style="text-align:center;"> 23.4% </td>
+   <td style="text-align:center;"> 1.4% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:left;font-weight: bold;color: rgba(231, 76, 60, 255) !important;"> High Vol </td>
+   <td style="text-align:center;"> 266 </td>
+   <td style="text-align:center;"> +0.45% </td>
+   <td style="text-align:center;"> 56.4% </td>
+   <td style="text-align:center;"> 18.8% </td>
+   <td style="text-align:center;"> 3.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;font-weight: bold;color: rgba(243, 156, 18, 255) !important;"> Medium Vol </td>
+   <td style="text-align:center;"> 14 </td>
+   <td style="text-align:center;"> -0.86% </td>
+   <td style="text-align:center;"> 35.7% </td>
+   <td style="text-align:center;"> 35.7% </td>
+   <td style="text-align:center;"> 0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:left;font-weight: bold;color: rgba(231, 76, 60, 255) !important;"> High Vol </td>
+   <td style="text-align:center;"> 90 </td>
+   <td style="text-align:center;"> +0.48% </td>
+   <td style="text-align:center;"> 57.8% </td>
+   <td style="text-align:center;"> 17.8% </td>
+   <td style="text-align:center;"> 6.7% </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:left;font-weight: bold;color: rgba(231, 76, 60, 255) !important;"> High Vol </td>
+   <td style="text-align:center;"> 27 </td>
+   <td style="text-align:center;"> +0.97% </td>
+   <td style="text-align:center;"> 63% </td>
+   <td style="text-align:center;"> 11.1% </td>
+   <td style="text-align:center;"> 11.1% </td>
+  </tr>
+</tbody>
+</table>
+
+
+``` r
 fwd_all |>
   filter(horizon == 5) |>
   ggplot(aes(x = fwd_ret, fill = vol_regime, color = vol_regime)) +
@@ -686,6 +931,8 @@ fwd_all |>
         strip.text       = element_text(color = "white"))
 ```
 
+<img src="nifty50-after-fall_files/figure-html/plot-regime-density-1.png" alt="" width="100%" />
+
 <div class="plot-caption">In high-vol environments, all three fall sizes show a fat left tail and a nearly flat positive side. Low-vol falls look very different — tighter, more symmetric, and shifted right.</div>
 
 The key finding here: **a 1% fall in a high-vol regime behaves more like a 3% fall in a low-vol regime**. The threshold alone does not tell you what happens next. The market environment at the time of the fall matters as much as the size of the fall itself.
@@ -694,7 +941,8 @@ The key finding here: **a 1% fall in a high-vol regime behaves more like a 3% fa
 
 # Ridge View: All Horizons Together
 
-```{r plot-ridge, fig.height=8, message=FALSE}
+
+``` r
 fwd_all |>
   filter(horizon %in% c(1, 2, 3, 5, 10, 20)) |>
   ggplot(aes(x = fwd_ret, y = fct_rev(horizon_label), fill = after_stat(x))) +
@@ -729,6 +977,8 @@ fwd_all |>
   )
 ```
 
+<img src="nifty50-after-fall_files/figure-html/plot-ridge-1.png" alt="" width="100%" />
+
 <div class="plot-caption">Each panel shows how the distribution evolves as you extend the horizon. The widening at longer horizons is path dependency — more time means more opportunity for the market to move further in either direction.</div>
 
 ---
@@ -737,7 +987,8 @@ fwd_all |>
 
 A different way to look at this — conditional on the market eventually recovering, how long does that take?
 
-```{r recovery}
+
+``` r
 # For each fall day, find first day within 60 sessions where close >= fall-day close
 # Done in tidy style: cross join fall days with horizons 1:60, filter, take first match
 
@@ -779,7 +1030,8 @@ recovery_summary <- recovery_tbl |>
   )
 ```
 
-```{r table-recovery}
+
+``` r
 recovery_summary |>
   transmute(
     `Fall Size`         = threshold,
@@ -795,7 +1047,51 @@ recovery_summary |>
   column_spec(6, color = "#e74c3c", bold = TRUE)
 ```
 
-```{r plot-recovery, fig.height=5}
+<table class="table table-hover" style="color: black; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Fall Size </th>
+   <th style="text-align:center;"> Events </th>
+   <th style="text-align:center;"> Recovered in 5d </th>
+   <th style="text-align:center;"> Recovered in 10d </th>
+   <th style="text-align:center;"> Recovered in 20d </th>
+   <th style="text-align:center;"> Not in 60d </th>
+   <th style="text-align:center;"> Median Days </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 1%+ </td>
+   <td style="text-align:center;"> 471 </td>
+   <td style="text-align:center;"> 80.7% </td>
+   <td style="text-align:center;"> 88.5% </td>
+   <td style="text-align:center;"> 93.7% </td>
+   <td style="text-align:center;font-weight: bold;color: rgba(231, 76, 60, 255) !important;"> 5.5% </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2%+ </td>
+   <td style="text-align:center;"> 106 </td>
+   <td style="text-align:center;"> 81.2% </td>
+   <td style="text-align:center;"> 86.1% </td>
+   <td style="text-align:center;"> 92.1% </td>
+   <td style="text-align:center;font-weight: bold;color: rgba(231, 76, 60, 255) !important;"> 4.7% </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3%+ </td>
+   <td style="text-align:center;"> 27 </td>
+   <td style="text-align:center;"> 88.9% </td>
+   <td style="text-align:center;"> 92.6% </td>
+   <td style="text-align:center;"> 100% </td>
+   <td style="text-align:center;font-weight: bold;color: rgba(231, 76, 60, 255) !important;"> 0% </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+</tbody>
+</table>
+
+
+``` r
 recovery_tbl |>
   filter(!is.na(recovered_at), recovered_at <= 60) |>
   ggplot(aes(x = recovered_at, fill = threshold, color = threshold)) +
@@ -813,6 +1109,8 @@ recovery_tbl |>
   theme_report()
 ```
 
+<img src="nifty50-after-fall_files/figure-html/plot-recovery-1.png" alt="" width="100%" />
+
 <div class="plot-caption">1%+ falls recover quickly — most within 5 days. 3%+ falls have a much flatter distribution, with a meaningful mass out to 30–40 days or beyond.</div>
 
 The recovery speed difference is significant. After a **1% fall**, most events recover to their pre-fall level within a week. After a **3% fall**, recovery is slower, less predictable, and a larger fraction do not recover at all within 60 trading days (roughly 3 months).
@@ -825,7 +1123,8 @@ The bigger the fall, the longer and less certain the road back.
 
 # Summary
 
-```{r final-summary}
+
+``` r
 tibble(
   Question = c(
     "Does the market bounce after a fall?",
@@ -851,6 +1150,45 @@ tibble(
   column_spec(1, bold = TRUE, width = "35%") |>
   column_spec(2, width = "65%")
 ```
+
+<table class="table table-hover" style="color: black; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Question </th>
+   <th style="text-align:left;"> Answer </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;width: 35%; font-weight: bold;"> Does the market bounce after a fall? </td>
+   <td style="text-align:left;width: 65%; "> On average yes, but only barely and with wide variance </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 35%; font-weight: bold;"> Is T+1 more likely positive or negative? </td>
+   <td style="text-align:left;width: 65%; "> Positive, but only 54–56% of the time — close to a coin flip </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 35%; font-weight: bold;"> Does fall size change the outcome? </td>
+   <td style="text-align:left;width: 65%; "> Yes. Bigger falls = lower bounce probability, wider outcome range, slower recovery </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 35%; font-weight: bold;"> Are falls independent events? </td>
+   <td style="text-align:left;width: 65%; "> No. Clustering is high — another fall of the same size within 5 days is common </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 35%; font-weight: bold;"> Does the vol regime matter? </td>
+   <td style="text-align:left;width: 65%; "> Significantly. High-vol falls have far worse forward return distributions </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 35%; font-weight: bold;"> How long to recover from a 1% fall? </td>
+   <td style="text-align:left;width: 65%; "> Median ~4–5 days. Most recover within a week </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;width: 35%; font-weight: bold;"> How long to recover from a 3% fall? </td>
+   <td style="text-align:left;width: 65%; "> Median ~10–14 days. A meaningful fraction don't recover in 60 days </td>
+  </tr>
+</tbody>
+</table>
 
 ---
 
