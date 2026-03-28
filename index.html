@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research — Economics & Finance</title>
+  <meta name="description" content="Personal research and market analysis on economics and finance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 17px;
+      line-height: 1.85;
+      color: #1a1a2e;
+      background: #fafaf8;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    header {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 2px solid #e74c3c;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    header .subtitle {
+      font-size: 1.05rem;
+      color: #555;
+      font-style: italic;
+      max-width: 600px;
+    }
+
+    /* ── Lead / About ──────────────────────────────── */
+    .lead {
+      font-size: 1.05rem;
+      color: #444;
+      font-style: italic;
+      border-left: 4px solid #e74c3c;
+      padding: 0.6rem 1.2rem;
+      margin: 0 0 2.5rem 0;
+      background: #fff8f7;
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* ── Section heading ───────────────────────────── */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      border-bottom: 2px solid #e74c3c;
+      padding-bottom: 5px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Report cards ──────────────────────────────── */
+    .report-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      margin-bottom: 3rem;
+    }
+
+    .report-card {
+      background: #ffffff;
+      border: 1px solid #e8eaed;
+      border-radius: 8px;
+      padding: 1.5rem 1.6rem;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .report-card:hover {
+      border-color: #1a3c5e;
+      box-shadow: 0 4px 16px rgba(26, 26, 46, 0.08);
+    }
+
+    .report-card .card-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #888;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .report-card .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+    }
+
+    .report-card .card-desc {
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 0.7rem;
+    }
+
+    .report-card .card-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .report-card .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: #1a1a2e;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+
+    .tag.red   { background: #e74c3c; }
+    .tag.amber { background: #e67e22; }
+    .tag.blue  { background: #1a3c5e; }
+    .tag.purple{ background: #8e44ad; }
+
+    /* ── Stat row (mirrors report) ─────────────────── */
+    .stat-row {
+      display: flex;
+      gap: 14px;
+      margin: 1.4rem 0 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      flex: 1;
+      min-width: 140px;
+      background: #1a1a2e;
+      color: white;
+      border-radius: 8px;
+      padding: 1rem 0.9rem;
+      text-align: center;
+    }
+
+    .stat-box .stat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: block;
+      line-height: 1.1;
+    }
+
+    .stat-num.red   { color: #e74c3c; }
+    .stat-num.blue  { color: #5dade2; }
+    .stat-num.green { color: #58d68d; }
+
+    .stat-box .stat-label {
+      font-size: 0.7rem;
+      opacity: 0.65;
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    /* ── Footer ────────────────────────────────────── */
+    footer {
+      border-top: 1px solid #e0e0e0;
+      padding: 1.5rem 0 2rem;
+      margin-top: 2rem;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    footer a {
+      color: #1a3c5e;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Responsive ────────────────────────────────── */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.8rem; }
+      .report-card { padding: 1.1rem; }
+      .report-card .card-title { font-size: 1.1rem; }
+      .stat-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ── Header ──────────────────────────────────── -->
+    <header>
+      <h1>Research Notes</h1>
+      <p class="subtitle">Personal research and market analysis — answering my own questions about economics &amp; finance.</p>
+    </header>
+
+    <!-- ── About ───────────────────────────────────── -->
+    <div class="lead">
+      This repository contains personal research and market analysis written to answer my own questions about economics &amp; finance. Nothing here is financial advice. All analysis is empirical, based on publicly available data, and presented as-is.
+    </div>
+
+    <!-- ── Stats ───────────────────────────────────── -->
+    <div class="stat-row">
+      <div class="stat-box">
+        <span class="stat-num blue">1</span>
+        <span class="stat-label">Published Reports</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num green">R</span>
+        <span class="stat-label">Primary Language</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num red">NSE</span>
+        <span class="stat-label">Markets Covered</span>
+      </div>
+    </div>
+
+    <!-- ── Reports ─────────────────────────────────── -->
+    <h2 class="section-title">Reports</h2>
+
+    <div class="report-list">
+
+      <!-- Report 1 — Nifty 50 -->
+      <a class="report-card" href="nifty-50-post-fall-behaviour.html">
+        <div class="card-date">2025</div>
+        <div class="card-title">Nifty 50: How Does the Market Move After a Big Fall?</div>
+        <div class="card-desc">
+          When Nifty falls 1%, 2%, or 3% in a single day — does it bounce, continue falling, or drift sideways? A pure price-behaviour study across 14+ years of daily data. Covers forward return distributions, recovery speed, volatility clustering, and regime-dependent outcomes.
+        </div>
+        <div class="card-tags">
+          <span class="tag red">Nifty 50</span>
+          <span class="tag blue">Market Behaviour</span>
+          <span class="tag amber">Volatility</span>
+          <span class="tag purple">Tail Risk</span>
+        </div>
+      </a>
+
+      <!-- ─── Add more reports below ─── -->
+      <!--
+      <a class="report-card" href="your-report.html">
+        <div class="card-date">2025</div>
+        <div class="card-title">Your Next Report Title</div>
+        <div class="card-desc">
+          Brief description of the report.
+        </div>
+        <div class="card-tags">
+          <span class="tag blue">Tag</span>
+        </div>
+      </a>
+      -->
+
+    </div>
+
+    <!-- ── Footer ──────────────────────────────────── -->
+    <footer>
+      &copy; 2025 &middot; <a href="https://github.com/YOUR_USERNAME/YOUR_REPO" target="_blank" rel="noopener">Source on GitHub</a>
+    </footer>
+
+  </div>
+
+</body>
+</html>
